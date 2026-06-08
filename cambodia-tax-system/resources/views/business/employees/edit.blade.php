@@ -42,8 +42,17 @@
                         <label>Residency Status</label>
 
                         <select name="residency_status" class="w-full border rounded p-2" required>
-                            <option value="resident">Resident</option>
-                            <option value="non_resident">Non Resident</option>
+                            <option
+                                value="resident"
+                                {{ $employee->residency_status == 'resident' ? 'selected' : '' }}>
+                                Resident
+                            </option>
+
+                            <option
+                                value="non_resident"
+                                {{ $employee->residency_status == 'non_resident' ? 'selected' : '' }}>
+                                Non Resident
+                            </option>
                         </select>
                     </div>
 
@@ -68,6 +77,50 @@
                             value="{{ old('salary', $employee->salary) }}"
                             class="w-full border rounded p-2"
                             required>
+                    </div>
+
+                    <div>
+                        <label>Currency</label>
+
+                        <select
+                            name="currency"
+                            class="w-full border rounded p-2">
+
+                            <option
+                                value="USD"
+                                {{ $employee->currency == 'USD' ? 'selected' : '' }}>
+                                USD ($)
+                            </option>
+
+                            <option
+                                value="KHR"
+                                {{ $employee->currency == 'KHR' ? 'selected' : '' }}>
+                                KHR (៛)
+                            </option>
+
+                        </select>
+                    </div>
+
+                    <div>
+                        <label>Dependents</label>
+
+                        <input
+                            type="number"
+                            name="dependents"
+                            value="{{ old('dependents', $employee->dependents) }}"
+                            min="0"
+                            class="w-full border rounded p-2">
+                    </div>
+
+                    <div>
+                        <label>Fringe Benefit (KHR)</label>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            name="fringe_benefit_khr"
+                            value="{{ old('fringe_benefit_khr', $employee->fringe_benefit_khr) }}"
+                            class="w-full border rounded p-2">
                     </div>
 
                 </div>

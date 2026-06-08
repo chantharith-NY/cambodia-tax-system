@@ -13,6 +13,7 @@ use App\Http\Controllers\Business\CompanyController;
 use App\Http\Controllers\Business\RevenueController;
 use App\Http\Controllers\Business\ExpenseController;
 use App\Http\Controllers\Business\EmployeeController;
+use App\Http\Controllers\Business\PayrollController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -106,6 +107,12 @@ Route::middleware([
         Route::resource(
             'employees',
             EmployeeController::class
+        );
+
+        // Payroll
+        Route::resource(
+            'payrolls',
+            PayrollController::class
         );
     });
 

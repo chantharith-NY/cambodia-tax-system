@@ -36,23 +36,29 @@ class RevenueController extends Controller
             'invoice_date' => ['required', 'date'],
         ]);
 
+        $exchangeRate = $request->exchange_rate ?? 4100;
+
+        $amountKHR = $request->currency === 'USD'
+            ? $request->amount * $exchangeRate
+            : $request->amount;
+
         if ($request->vat_included) {
 
             $baseAmount = round(
-                $request->amount / 1.10,
+                $amountKHR / 1.10,
                 2
             );
 
             $vatAmount = round(
-                $request->amount - $baseAmount,
+                $amountKHR - $baseAmount,
                 2
             );
         } else {
 
-            $baseAmount = $request->amount;
+            $baseAmount = $amountKHR;
 
             $vatAmount = round(
-                $request->amount * 0.10,
+                $amountKHR * 0.10,
                 2
             );
         }

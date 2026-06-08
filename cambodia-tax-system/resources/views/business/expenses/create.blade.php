@@ -61,6 +61,38 @@
                     </div>
 
                     <div>
+                        <label>
+                            Currency
+                        </label>
+
+                        <select
+                            name="currency"
+                            class="w-full border rounded p-2">
+
+                            <option value="USD">
+                                USD ($)
+                            </option>
+
+                            <option value="KHR">
+                                KHR (៛)
+                            </option>
+
+                        </select>
+                    </div>
+
+                    <div>
+                        <label>
+                            Exchange Rate
+                        </label>
+
+                        <input
+                            type="number"
+                            name="exchange_rate"
+                            value="4100"
+                            class="w-full border rounded p-2">
+                    </div>
+
+                    <div>
                         <label>Expense Date</label>
 
                         <input

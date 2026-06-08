@@ -66,5 +66,18 @@
 
         </a>
 
+        <a href="{{ route('business.payrolls.index') }}"
+            class="bg-purple-600 text-white p-6 rounded-lg">
+
+            <h3 class="text-xl font-bold">
+                Payroll
+            </h3>
+
+            <p>
+                Manage employee payroll
+            </p>
+
+        </a>
+
     </div>
 </x-app-layout>

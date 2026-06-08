@@ -33,6 +33,10 @@ class EmployeeController extends Controller
             'name' => ['required'],
             'position' => ['required'],
             'salary' => ['required', 'numeric'],
+            'currency' => ['required'],
+            'residency_status' => ['required'],
+            'dependents' => ['required', 'integer'],
+            'fringe_benefit_khr' => ['nullable', 'numeric'],
         ]);
 
         $company = $request->user()
@@ -44,6 +48,10 @@ class EmployeeController extends Controller
             'name' => $request->name,
             'position' => $request->position,
             'salary' => $request->salary,
+            'currency' => $request->currency,
+            'residency_status' => $request->residency_status,
+            'dependents' => $request->dependents,
+            'fringe_benefit_khr' => $request->fringe_benefit_khr ?? 0,
         ]);
 
         return redirect()
@@ -79,6 +87,10 @@ class EmployeeController extends Controller
             'name' => ['required'],
             'position' => ['required'],
             'salary' => ['required', 'numeric'],
+            'currency' => ['required'],
+            'residency_status' => ['required'],
+            'dependents' => ['required', 'integer'],
+            'fringe_benefit_khr' => ['nullable', 'numeric'],
         ]);
 
         $employee->update([
@@ -86,6 +98,10 @@ class EmployeeController extends Controller
             'name' => $request->name,
             'position' => $request->position,
             'salary' => $request->salary,
+            'currency' => $request->currency,
+            'residency_status' => $request->residency_status,
+            'dependents' => $request->dependents,
+            'fringe_benefit_khr' => $request->fringe_benefit_khr ?? 0,
         ]);
 
         return redirect()
