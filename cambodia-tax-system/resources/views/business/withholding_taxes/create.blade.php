@@ -5,67 +5,79 @@
         <div class="bg-white shadow rounded-lg p-6">
 
             <h2 class="text-2xl font-bold mb-6">
-                Edit Revenue
+                Create Withholding Tax
             </h2>
 
             <form
-                action="{{ route('business.revenues.update', $revenue) }}"
+                action="{{ route('business.withholding-taxes.store') }}"
                 method="POST">
+
                 @csrf
-                @method('PUT')
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                     <div>
-                        <label>Invoice Number</label>
+                        <label>Vendor Name</label>
 
                         <input
                             type="text"
-                            name="invoice_no"
-                            value="{{ $revenue->invoice_no }}"
+                            name="vendor_name"
                             class="w-full border rounded p-2"
                             required>
                     </div>
 
                     <div>
-                        <label>Customer Name</label>
+                        <label>Payment Type</label>
 
-                        <input
-                            type="text"
-                            name="customer_name"
-                            value="{{ $revenue->customer_name }}"
+                        <select
+                            name="payment_type"
                             class="w-full border rounded p-2"
                             required>
+
+                            <option value="rental">
+                                Rental (10%)
+                            </option>
+
+                            <option value="services">
+                                Services (15%)
+                            </option>
+
+                            <option value="royalties_interest">
+                                Royalties / Interest (15%)
+                            </option>
+
+                            <option value="non_resident">
+                                Non Resident (14%)
+                            </option>
+
+                        </select>
                     </div>
 
                     <div>
-                        <label>Amount</label>
+                        <label>Gross Amount</label>
 
                         <input
                             type="number"
                             step="0.01"
-                            name="amount"
-                            value="{{ $revenue->amount }}"
+                            name="gross_amount"
                             class="w-full border rounded p-2"
                             required>
                     </div>
 
                     <div>
-                        <label>Currency</label>
+                        <label>
+                            Currency
+                        </label>
 
                         <select
                             name="currency"
                             class="w-full border rounded p-2">
 
-                            <option
-                                value="USD"
-                                {{ $revenue->currency == 'USD' ? 'selected' : '' }}>
+                            <option value="USD">
                                 USD ($)
                             </option>
 
-                            <option
-                                value="KHR"
-                                {{ $revenue->currency == 'KHR' ? 'selected' : '' }}>
+                            <option value="KHR">
                                 KHR (៛)
                             </option>
 
@@ -73,47 +85,37 @@
                     </div>
 
                     <div>
-                        <label>Exchange Rate</label>
+                        <label>
+                            Exchange Rate
+                        </label>
 
                         <input
                             type="number"
                             name="exchange_rate"
-                            value="{{ $revenue->exchange_rate ?? 4100 }}"
+                            value="4100"
                             class="w-full border rounded p-2">
                     </div>
 
                     <div>
-                        <label>Invoice Date</label>
+                        <label>Payment Date</label>
 
                         <input
                             type="date"
-                            name="invoice_date"
-                            value="{{ $revenue->invoice_date->format('Y-m-d') }}"
+                            name="payment_date"
                             class="w-full border rounded p-2"
                             required>
                     </div>
 
-                </div>
+                    <div class="md:col-span-2">
 
-                <div class="mt-4">
+                        <label>Description</label>
 
-                    <label class="flex items-center">
+                        <textarea
+                            name="description"
+                            rows="3"
+                            class="w-full border rounded p-2"></textarea>
 
-                        <input
-                            type="hidden"
-                            name="vat_included"
-                            value="0">
-
-                        <input
-                            type="checkbox"
-                            name="vat_included"
-                            value="1"
-                            {{ old('vat_included', $revenue->vat_included) ? 'checked' : '' }}>
-
-
-                        <span class="font-bold"> VAT Included</span>
-
-                    </label>
+                    </div>
 
                 </div>
 
@@ -122,7 +124,9 @@
                     <button
                         type="submit"
                         class="bg-blue-600 text-white px-4 py-2 rounded">
-                        Update Revenue
+
+                        Save
+
                     </button>
 
                 </div>

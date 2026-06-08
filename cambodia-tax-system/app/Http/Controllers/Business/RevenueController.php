@@ -83,6 +83,9 @@ class RevenueController extends Controller
             'customer_name' => $request->customer_name,
 
             'amount' => $request->amount,
+            'currency' => $request->currency,
+            'exchange_rate' => $exchangeRate,
+            'amount_khr' => $amountKHR,
 
             'vat_included' => $request->vat_included,
 
@@ -130,23 +133,29 @@ class RevenueController extends Controller
             'invoice_date' => ['required', 'date'],
         ]);
 
-        if ($request->vat_included) {
+        $exchangeRate = $request->exchange_rate ?? 4100;
+
+        $amountKHR = $request->currency === 'USD'
+            ? $request->amount * $exchangeRate
+            : $request->amount;
+
+        if ($request->boolean('vat_included')) {
 
             $baseAmount = round(
-                $request->amount / 1.10,
+                $amountKHR / 1.10,
                 2
             );
 
             $vatAmount = round(
-                $request->amount - $baseAmount,
+                $amountKHR - $baseAmount,
                 2
             );
         } else {
 
-            $baseAmount = $request->amount;
+            $baseAmount = $amountKHR;
 
             $vatAmount = round(
-                $request->amount * 0.10,
+                $amountKHR * 0.10,
                 2
             );
         }
@@ -155,6 +164,9 @@ class RevenueController extends Controller
             'invoice_no' => $request->invoice_no,
             'customer_name' => $request->customer_name,
             'amount' => $request->amount,
+            'currency' => $request->currency,
+            'exchange_rate' => $exchangeRate,
+            'amount_khr' => $amountKHR,
             'vat_included' => $request->vat_included,
             'base_amount' => $baseAmount,
             'vat_amount' => $vatAmount,
