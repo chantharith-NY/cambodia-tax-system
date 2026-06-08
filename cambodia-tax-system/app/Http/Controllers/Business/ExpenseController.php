@@ -35,25 +35,32 @@ class ExpenseController extends Controller
             'expense_date' => ['required', 'date'],
         ]);
 
-        $vatIncluded = $request->boolean('vat_included');
+        $exchangeRate = $request->exchange_rate ?? 4100;
+
+        $amountKHR = $request->currency === 'USD'
+            ? $request->amount * $exchangeRate
+            : $request->amount;
+
+        $vatIncluded =
+            $request->boolean('vat_included');
 
         if ($vatIncluded) {
 
             $baseAmount = round(
-                $request->amount / 1.10,
+                $amountKHR / 1.10,
                 2
             );
 
             $vatAmount = round(
-                $request->amount - $baseAmount,
+                $amountKHR - $baseAmount,
                 2
             );
         } else {
 
-            $baseAmount = $request->amount;
+            $baseAmount = $amountKHR;
 
             $vatAmount = round(
-                $request->amount * 0.10,
+                $amountKHR * 0.10,
                 2
             );
         }
@@ -62,23 +69,34 @@ class ExpenseController extends Controller
             ->getCurrentCompany();
 
         Expense::create([
+
             'company_id' => $company->id,
 
-            'supplier_name' => $request->supplier_name,
+            'supplier_name' =>
+            $request->supplier_name,
 
-            'category' => $request->category,
+            'category' =>
+            $request->category,
 
             'amount' => $request->amount,
+            'currency' => $request->currency,
+            'exchange_rate' => $exchangeRate,
+            'amount_khr' => $amountKHR,
 
-            'vat_included' => $vatIncluded,
+            'vat_included' =>
+            $vatIncluded,
 
-            'base_amount' => $baseAmount,
+            'base_amount' =>
+            $baseAmount,
 
-            'vat_amount' => $vatAmount,
+            'vat_amount' =>
+            $vatAmount,
 
-            'description' => $request->description,
+            'description' =>
+            $request->description,
 
-            'expense_date' => $request->expense_date,
+            'expense_date' =>
+            $request->expense_date,
         ]);
 
         return redirect()
@@ -117,25 +135,34 @@ class ExpenseController extends Controller
             'expense_date' => ['required', 'date'],
         ]);
 
+        $exchangeRate =
+            $request->exchange_rate
+            ?? 4100;
+
+        $amountKHR =
+            $request->currency === 'USD'
+            ? $request->amount * $exchangeRate
+            : $request->amount;
+
         $vatIncluded = $request->boolean('vat_included');
 
         if ($vatIncluded) {
 
             $baseAmount = round(
-                $request->amount / 1.10,
+                $amountKHR / 1.10,
                 2
             );
 
             $vatAmount = round(
-                $request->amount - $baseAmount,
+                $amountKHR - $baseAmount,
                 2
             );
         } else {
 
-            $baseAmount = $request->amount;
+            $baseAmount = $amountKHR;
 
             $vatAmount = round(
-                $request->amount * 0.10,
+                $amountKHR * 0.10,
                 2
             );
         }
@@ -146,6 +173,9 @@ class ExpenseController extends Controller
             'category' => $request->category,
 
             'amount' => $request->amount,
+            'currency' => $request->currency,
+            'exchange_rate' => $exchangeRate,
+            'amount_khr' => $amountKHR,
 
             'vat_included' => $vatIncluded,
 

@@ -5,6 +5,19 @@ namespace App\Services;
 class SalaryTaxService
 {
     const DEPENDENT_DEDUCTION_KHR = 150000;
+    const USD_TO_KHR_DEFAULT = 4100;
+
+    private function convertToKHR(
+        float $amount,
+        string $currency
+    ): float {
+
+        if ($currency === 'USD') {
+            return $amount * self::USD_TO_KHR_DEFAULT;
+        }
+
+        return $amount;
+    }
 
     public function calculate(
         float $grossSalaryKHR,

@@ -12,7 +12,10 @@ class Employee extends Model
         'name',
         'position',
         'salary',
+        'currency',
         'residency_status',
+        'dependents',
+        'fringe_benefit_khr',
     ];
 
     protected function casts(): array

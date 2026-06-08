@@ -11,10 +11,29 @@ class WithholdingTaxService
         'non_resident' => 0.14,
     ];
 
+    public function getRates(): array
+    {
+        return $this->rates;
+    }
+
     public function calculate(
         float $grossAmountKHR,
         string $paymentType
     ): array {
+
+        if ($grossAmountKHR < 0) {
+            throw new \InvalidArgumentException(
+                'Amount cannot be negative.'
+            );
+        }
+
+        if (!isset(
+            $this->rates[$paymentType]
+        )) {
+            throw new \InvalidArgumentException(
+                'Invalid payment type.'
+            );
+        }
 
         $rate = $this->rates[$paymentType];
 
@@ -22,13 +41,8 @@ class WithholdingTaxService
 
         return [
             'gross_amount_khr' => $grossAmountKHR,
-
             'withholding_tax_khr' => $tax,
-
-            'net_amount_khr' => (
-                $grossAmountKHR - $tax
-            ),
-
+            'net_amount_khr' => $grossAmountKHR - $tax,
             'rate' => $rate,
         ];
     }
@@ -37,6 +51,12 @@ class WithholdingTaxService
         float $netAmountKHR,
         string $paymentType
     ): array {
+
+        if ($netAmountKHR < 0) {
+            throw new \InvalidArgumentException(
+                'Amount cannot be negative.'
+            );
+        }
 
         $rate = $this->rates[$paymentType];
 

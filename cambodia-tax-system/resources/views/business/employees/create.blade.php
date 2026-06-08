@@ -65,6 +65,47 @@
                             required>
                     </div>
 
+                    <div>
+                        <label>Currency</label>
+
+                        <select
+                            name="currency"
+                            class="w-full border rounded p-2"
+                            required>
+
+                            <option value="USD">
+                                USD ($)
+                            </option>
+
+                            <option value="KHR">
+                                KHR (៛)
+                            </option>
+
+                        </select>
+                    </div>
+
+                    <div>
+                        <label>Dependents</label>
+
+                        <input
+                            type="number"
+                            name="dependents"
+                            value="0"
+                            min="0"
+                            class="w-full border rounded p-2">
+                    </div>
+
+                    <div>
+                        <label>Fringe Benefit (KHR)</label>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            name="fringe_benefit_khr"
+                            value="0"
+                            class="w-full border rounded p-2">
+                    </div>
+
                 </div>
 
                 <div class="mt-6">

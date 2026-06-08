@@ -13,6 +13,9 @@ use App\Http\Controllers\Business\CompanyController;
 use App\Http\Controllers\Business\RevenueController;
 use App\Http\Controllers\Business\ExpenseController;
 use App\Http\Controllers\Business\EmployeeController;
+use App\Http\Controllers\Business\PayrollController;
+use App\Http\Controllers\Business\WithholdingTaxController;
+use App\Http\Controllers\Business\TaxReturnController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -107,6 +110,39 @@ Route::middleware([
             'employees',
             EmployeeController::class
         );
+
+        // Payroll
+        Route::resource(
+            'payrolls',
+            PayrollController::class
+        );
+
+        // Withholding Tax
+        Route::resource(
+            'withholding-taxes',
+            WithholdingTaxController::class
+        );
+
+        // Tax Return
+        Route::resource(
+            'tax-returns',
+            TaxReturnController::class
+        )->only([
+            'index',
+            'create',
+            'store',
+            'show'
+        ]);
+
+        Route::patch(
+            'tax-returns/{taxReturn}/submit',
+            [TaxReturnController::class, 'submit']
+        )->name('tax-returns.submit');
+
+        Route::patch(
+            'tax-returns/{taxReturn}/paid',
+            [TaxReturnController::class, 'markPaid']
+        )->name('tax-returns.paid');
     });
 
 require __DIR__ . '/auth.php';

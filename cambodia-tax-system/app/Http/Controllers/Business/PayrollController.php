@@ -3,63 +3,202 @@
 namespace App\Http\Controllers\Business;
 
 use App\Http\Controllers\Controller;
+use App\Models\Employee;
+use App\Models\Payroll;
+use App\Services\SalaryTaxService;
 use Illuminate\Http\Request;
 
 class PayrollController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of payrolls.
      */
     public function index()
     {
-        //
+        $payrolls = Payroll::with('employee')
+            ->latest()
+            ->paginate(10);
+
+        return view(
+            'business.payrolls.index',
+            compact('payrolls')
+        );
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show create payroll form.
      */
     public function create()
     {
-        //
+        $employees = Employee::orderBy('name')
+            ->get();
+
+        return view(
+            'business.payrolls.create',
+            compact('employees')
+        );
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store payroll.
      */
-    public function store(Request $request)
-    {
-        //
+    public function store(
+        Request $request,
+        SalaryTaxService $salaryTaxService
+    ) {
+        $request->validate([
+            'employee_id' => [
+                'required',
+                'exists:employees,id'
+            ],
+
+            'payroll_month' => [
+                'required',
+                'date'
+            ],
+        ]);
+
+        $employee = Employee::findOrFail(
+            $request->employee_id
+        );
+
+        $salaryKHR = $employee->currency === 'USD'
+            ? $employee->salary * 4100
+            : $employee->salary;
+
+        $taxResult = $salaryTaxService->calculate(
+            $salaryKHR,
+            $employee->dependents,
+            $employee->fringe_benefit_khr
+        );
+
+        Payroll::create([
+
+            'employee_id' =>
+            $employee->id,
+
+            'payroll_month' =>
+            $request->payroll_month,
+
+            'gross_salary' =>
+            $taxResult['gross_salary_khr'],
+
+            'salary_tax' =>
+            $taxResult['total_tax_khr'],
+
+            'net_salary' =>
+            $taxResult['gross_salary_khr']
+                -
+                $taxResult['total_tax_khr'],
+        ]);
+
+        return redirect()
+            ->route('business.payrolls.index')
+            ->with(
+                'success',
+                'Payroll created successfully.'
+            );
     }
 
     /**
-     * Display the specified resource.
+     * Show payroll details.
      */
-    public function show(string $id)
+    public function show(Payroll $payroll)
     {
-        //
+        return view(
+            'business.payrolls.show',
+            compact('payroll')
+        );
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show edit form.
      */
-    public function edit(string $id)
+    public function edit(Payroll $payroll)
     {
-        //
+        $employees = Employee::orderBy('name')
+            ->get();
+
+        return view(
+            'business.payrolls.edit',
+            compact(
+                'payroll',
+                'employees'
+            )
+        );
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update payroll.
      */
-    public function update(Request $request, string $id)
-    {
-        //
+    public function update(
+        Request $request,
+        Payroll $payroll,
+        SalaryTaxService $salaryTaxService
+    ) {
+
+        $request->validate([
+            'employee_id' => [
+                'required',
+                'exists:employees,id'
+            ],
+
+            'payroll_month' => [
+                'required',
+                'date'
+            ],
+        ]);
+
+        $employee = Employee::findOrFail(
+            $request->employee_id
+        );
+
+        $taxResult = $salaryTaxService->calculate(
+            $employee->salary,
+            $employee->dependents,
+            $employee->fringe_benefit_khr
+        );
+
+        $payroll->update([
+
+            'employee_id' =>
+            $employee->id,
+
+            'payroll_month' =>
+            $request->payroll_month,
+
+            'gross_salary' =>
+            $taxResult['gross_salary_khr'],
+
+            'salary_tax' =>
+            $taxResult['total_tax_khr'],
+
+            'net_salary' =>
+            $taxResult['gross_salary_khr']
+                -
+                $taxResult['total_tax_khr'],
+        ]);
+
+        return redirect()
+            ->route('business.payrolls.index')
+            ->with(
+                'success',
+                'Payroll updated successfully.'
+            );
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Delete payroll.
      */
-    public function destroy(string $id)
+    public function destroy(Payroll $payroll)
     {
-        //
+        $payroll->delete();
+
+        return redirect()
+            ->route('business.payrolls.index')
+            ->with(
+                'success',
+                'Payroll deleted successfully.'
+            );
     }
 }

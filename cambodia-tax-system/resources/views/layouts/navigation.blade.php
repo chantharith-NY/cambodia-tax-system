@@ -39,6 +39,30 @@
                         Employee
                     </x-nav-link>
 
+                    <x-nav-link
+                        :href="route('business.payrolls.index')"
+                        :active="request()->routeIs('business.payrolls.*')">
+
+                        Payroll
+
+                    </x-nav-link>
+
+                    <x-nav-link
+                        :href="route('business.withholding-taxes.index')"
+                        :active="request()->routeIs('business.withholding-taxes.*')">
+
+                        Withholding Tax
+
+                    </x-nav-link>
+
+                    <x-nav-link
+                        :href="route('business.tax-returns.index')"
+                        :active="request()->routeIs('business.tax-returns.*')">
+
+                        Tax Returns
+
+                    </x-nav-link>
+
                     <!-- <x-nav-link
                         :href="route('business.company.create')"
                         :active="request()->routeIs('business.company.*')">
@@ -124,6 +148,30 @@
                 :href="route('business.employees.index')"
                 :active="request()->routeIs('business.employees.*')">
                 Employee
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link
+                :href="route('business.payrolls.index')"
+                :active="request()->routeIs('business.payrolls.*')">
+
+                Payroll
+
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link
+                :href="route('business.withholding-taxes.index')"
+                :active="request()->routeIs('business.withholding-taxes.*')">
+
+                Withholding Tax
+
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link
+                :href="route('business.tax-returns.index')"
+                :active="request()->routeIs('business.tax-returns.*')">
+
+                Tax Returns
+
             </x-responsive-nav-link>
 
             <!-- <x-responsive-nav-link
