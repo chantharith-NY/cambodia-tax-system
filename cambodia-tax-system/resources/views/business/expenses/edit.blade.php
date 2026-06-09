@@ -28,56 +28,80 @@
                     </div>
 
                     <div>
+
+                        <label>Supplier Type</label>
+
+                        <select
+                            name="supplier_type"
+                            class="w-full border rounded p-2">
+
+                            <option
+                                value="resident"
+                                {{ old('supplier_type', $expense->supplier_type) == 'resident' ? 'selected' : '' }}>
+                                Resident
+                            </option>
+
+                            <option
+                                value="non_resident"
+                                {{ old('supplier_type', $expense->supplier_type) == 'non_resident' ? 'selected' : '' }}>
+                                Non Resident
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div>
+
                         <label>Category</label>
 
                         <select
                             name="category"
                             class="w-full border rounded p-2"
                             required>
-                            <option value="Office Rent" {{ $expense->category == 'Office Rent' ? 'selected' : '' }}>
-                                Office Rent
+
+                            <option value="rental"
+                                {{ $expense->category == 'rental' ? 'selected' : '' }}>
+                                Rental
                             </option>
 
-                            <option value="Salary" {{ $expense->category == 'Salary' ? 'selected' : '' }}>
-                                Salary
+                            <option value="service"
+                                {{ $expense->category == 'service' ? 'selected' : '' }}>
+                                Service
                             </option>
 
-                            <option value="Utilities" {{ $expense->category == 'Utilities' ? 'selected' : '' }}>
-                                Utilities
+                            <option value="interest"
+                                {{ $expense->category == 'interest' ? 'selected' : '' }}>
+                                Interest
                             </option>
 
-                            <option value="Internet" {{ $expense->category == 'Internet' ? 'selected' : '' }}>
-                                Internet
+                            <option value="royalty"
+                                {{ $expense->category == 'royalty' ? 'selected' : '' }}>
+                                Royalty
                             </option>
 
-                            <option value="Transportation" {{ $expense->category == 'Transportation' ? 'selected' : '' }}>
-                                Transportation
+                            <option value="utility"
+                                {{ $expense->category == 'utility' ? 'selected' : '' }}>
+                                Utility
                             </option>
 
-                            <option value="Fuel" {{ $expense->category == 'Fuel' ? 'selected' : '' }}>
+                            <option value="fuel"
+                                {{ $expense->category == 'fuel' ? 'selected' : '' }}>
                                 Fuel
                             </option>
 
-                            <option value="Equipment" {{ $expense->category == 'Equipment' ? 'selected' : '' }}>
-                                Equipment
+                            <option value="salary"
+                                {{ $expense->category == 'salary' ? 'selected' : '' }}>
+                                Salary
                             </option>
 
-                            <option value="Marketing" {{ $expense->category == 'Marketing' ? 'selected' : '' }}>
-                                Marketing
-                            </option>
-
-                            <option value="Maintenance" {{ $expense->category == 'Maintenance' ? 'selected' : '' }}>
-                                Maintenance
-                            </option>
-
-                            <option value="Tax Payment" {{ $expense->category == 'Tax Payment' ? 'selected' : '' }}>
-                                Tax Payment
-                            </option>
-
-                            <option value="Other" {{ $expense->category == 'Other' ? 'selected' : '' }}>
+                            <option value="other"
+                                {{ $expense->category == 'other' ? 'selected' : '' }}>
                                 Other
                             </option>
+
                         </select>
+
                     </div>
 
                     <div>
@@ -90,6 +114,39 @@
                             value="{{ old('amount', $expense->amount) }}"
                             class="w-full border rounded p-2"
                             required>
+                    </div>
+
+                    <div>
+                        <label>Currency</label>
+
+                        <select
+                            name="currency"
+                            class="w-full border rounded p-2">
+
+                            <option
+                                value="KHR"
+                                {{ old('currency', $expense->currency) == 'KHR' ? 'selected' : '' }}>
+                                KHR
+                            </option>
+
+                            <option
+                                value="USD"
+                                {{ old('currency', $expense->currency) == 'USD' ? 'selected' : '' }}>
+                                USD
+                            </option>
+
+                        </select>
+                    </div>
+
+                    <div>
+                        <label>Exchange Rate</label>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            name="exchange_rate"
+                            value="{{ old('exchange_rate', $expense->exchange_rate ?? 4100) }}"
+                            class="w-full border rounded p-2">
                     </div>
 
                     <div>
@@ -116,6 +173,24 @@
 
                 </div>
 
+                <select
+                    name="has_vat_invoice"
+                    class="w-full border rounded p-2">
+
+                    <option
+                        value="1"
+                        {{ old('has_vat_invoice', $expense->has_vat_invoice) ? 'selected' : '' }}>
+                        Has VAT Invoice
+                    </option>
+
+                    <option
+                        value="0"
+                        {{ !old('has_vat_invoice', $expense->has_vat_invoice) ? 'selected' : '' }}>
+                        No VAT Invoice
+                    </option>
+
+                </select>
+
                 <div class="mt-4">
 
                     <input
@@ -132,9 +207,7 @@
                             class="mr-2"
                             {{ old('vat_included', $expense->vat_included) ? 'checked' : '' }}>
 
-                        <span class="font-bold">
-                            VAT Included
-                        </span>
+                        VAT Included In Amount
 
                     </label>
 

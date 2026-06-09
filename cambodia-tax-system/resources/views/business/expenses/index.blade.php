@@ -37,6 +37,10 @@
                         </th>
 
                         <th class="p-3 text-left">
+                            Supplier Type
+                        </th>
+
+                        <th class="p-3 text-left">
                             Category
                         </th>
 
@@ -50,6 +54,18 @@
 
                         <th class="p-3 text-left">
                             VAT
+                        </th>
+
+                        <th class="p-3 text-left">
+                            WHT %
+                        </th>
+
+                        <th class="p-3 text-left">
+                            WHT Amount
+                        </th>
+
+                        <th class="p-3 text-left">
+                            Net Payment
                         </th>
 
                         <th class="p-3 text-left">
@@ -75,6 +91,10 @@
                         </td>
 
                         <td class="p-3">
+                            {{ ucfirst($expense->supplier_type) }}
+                        </td>
+
+                        <td class="p-3">
                             {{ $expense->category }}
                         </td>
 
@@ -88,6 +108,18 @@
 
                         <td class="p-3">
                             {{ number_format($expense->vat_amount,2) }}
+                        </td>
+
+                        <td class="p-3">
+                            {{ number_format($expense->withholding_rate, 2) }}%
+                        </td>
+
+                        <td class="p-3">
+                            {{ number_format($expense->withholding_tax, 2) }}
+                        </td>
+
+                        <td class="p-3">
+                            {{ number_format($expense->net_payment, 2) }}
                         </td>
 
                         <td class="p-3">

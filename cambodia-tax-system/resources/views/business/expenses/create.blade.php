@@ -26,6 +26,19 @@
                     </div>
 
                     <div>
+                        <label>Supplier Type</label>
+                        <select name="supplier_type">
+                            <option value="resident">
+                                Resident
+                            </option>
+
+                            <option value="non_resident">
+                                Non Resident
+                            </option>
+                        </select>
+                    </div>
+
+                    <div>
                         <label>Category</label>
 
                         <select
@@ -34,17 +47,37 @@
                             required>
                             <option value="">Select Category</option>
 
-                            <option>Office Rent</option>
-                            <option>Salary</option>
-                            <option>Utilities</option>
-                            <option>Internet</option>
-                            <option>Transportation</option>
-                            <option>Fuel</option>
-                            <option>Equipment</option>
-                            <option>Marketing</option>
-                            <option>Maintenance</option>
-                            <option>Tax Payment</option>
-                            <option>Other</option>
+                            <option value="rental">
+                                Rental
+                            </option>
+
+                            <option value="service">
+                                Service
+                            </option>
+
+                            <option value="interest">
+                                Interest
+                            </option>
+
+                            <option value="royalty">
+                                Royalty
+                            </option>
+
+                            <option value="utility">
+                                Utility
+                            </option>
+
+                            <option value="fuel">
+                                Fuel
+                            </option>
+
+                            <option value="salary">
+                                Salary
+                            </option>
+
+                            <option value="other">
+                                Other
+                            </option>
 
                         </select>
                     </div>
@@ -117,6 +150,28 @@
 
                 <div class="mt-4">
 
+                    <label class="block font-bold mb-2">
+                        VAT Invoice
+                    </label>
+
+                    <select
+                        name="has_vat_invoice"
+                        class="w-full border rounded p-2">
+
+                        <option value="1">
+                            Has VAT Invoice
+                        </option>
+
+                        <option value="0">
+                            No VAT Invoice
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="mt-4">
+
                     <input
                         type="hidden"
                         name="vat_included"
@@ -130,7 +185,7 @@
                             value="1"
                             class="mr-2">
 
-                        VAT Included
+                        VAT Included In Amount
 
                     </label>
 
