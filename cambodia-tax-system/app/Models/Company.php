@@ -11,6 +11,7 @@ class Company extends Model
         'company_name',
         'tax_number',
         'industry',
+        'business_type',
         'phone',
         'address',
     ];

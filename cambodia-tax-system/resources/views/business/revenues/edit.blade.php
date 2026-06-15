@@ -92,8 +92,25 @@
                             class="w-full border rounded p-2"
                             required>
                     </div>
-
                 </div>
+
+                <select
+                    name="has_vat_invoice"
+                    class="w-full border rounded p-2 mt-4">
+
+                    <option
+                        value="1"
+                        {{ old('has_vat_invoice', $revenue->has_vat_invoice) ? 'selected' : '' }}>
+                        Has VAT Invoice
+                    </option>
+
+                    <option
+                        value="0"
+                        {{ !old('has_vat_invoice', $revenue->has_vat_invoice) ? 'selected' : '' }}>
+                        No VAT Invoice
+                    </option>
+
+                </select>
 
                 <div class="mt-4">
 

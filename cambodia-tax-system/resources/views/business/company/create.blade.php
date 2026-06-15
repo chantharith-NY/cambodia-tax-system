@@ -43,6 +43,37 @@
                             class="w-full border rounded p-2">
                     </div>
 
+                    <div class="mb-4">
+
+                        <label class="block mb-1">
+                            Business Type
+                        </label>
+
+                        <select
+                            name="business_type"
+                            class="w-full border rounded p-2"
+                            required>
+
+                            <option value="legal_entity">
+                                នីតិបុគ្គល (Legal Entity)
+                            </option>
+
+                            <option value="sole_proprietorship">
+                                សហគ្រាសឯកបុគ្គល (Sole Proprietorship)
+                            </option>
+
+                            <option value="natural_resource">
+                                Natural Resource Enterprise
+                            </option>
+
+                            <option value="qip">
+                                Qualified Investment Project (QIP)
+                            </option>
+
+                        </select>
+
+                    </div>
+
                     <div>
                         <label>Phone</label>
 

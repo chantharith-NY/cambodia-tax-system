@@ -5,11 +5,16 @@ use Illuminate\Support\Facades\Route;
 
 use Illuminate\Http\Request;
 
-use App\Http\Controllers\Individual\DashboardController as IndividualDashboardController;
-use App\Http\Controllers\Business\DashboardController as BusinessDashboardController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
-use App\Http\Controllers\Business\CompanyController;
+use App\Http\Controllers\Admin\IncomeTaxBracketController;
+use App\Http\Controllers\Admin\SalaryTaxBracketController;
+use App\Http\Controllers\Admin\TaxSettingController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\CompanyController as AdminCompanyController;
 
+
+use App\Http\Controllers\Business\CompanyController;
+use App\Http\Controllers\Business\DashboardController as BusinessDashboardController;
 use App\Http\Controllers\Business\RevenueController;
 use App\Http\Controllers\Business\ExpenseController;
 use App\Http\Controllers\Business\EmployeeController;
@@ -17,9 +22,43 @@ use App\Http\Controllers\Business\PayrollController;
 use App\Http\Controllers\Business\WithholdingTaxController;
 use App\Http\Controllers\Business\TaxReturnController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+use App\Http\Controllers\Public\SalaryTaxCalculatorController;
+use App\Http\Controllers\Public\HomeController;
+use App\Http\Controllers\Public\StampTaxCalculatorController;
+use App\Http\Controllers\Public\RentalTaxCalculatorController;
+
+Route::get('/', [HomeController::class, 'index'])
+    ->name('home');
+
+Route::get(
+    '/salary-tax-calculator',
+    [SalaryTaxCalculatorController::class, 'index']
+)->name('public.salary-tax');
+
+Route::post(
+    '/salary-tax-calculator',
+    [SalaryTaxCalculatorController::class, 'calculate']
+)->name('public.salary-tax.calculate');
+
+Route::get(
+    '/stamp-tax-calculator',
+    [StampTaxCalculatorController::class, 'index']
+)->name('public.stamp-tax');
+
+Route::post(
+    '/stamp-tax-calculator',
+    [StampTaxCalculatorController::class, 'calculate']
+)->name('public.stamp-tax.calculate');
+
+Route::get(
+    '/rental-tax-calculator',
+    [RentalTaxCalculatorController::class, 'index']
+)->name('public.rental-tax');
+
+Route::post(
+    '/rental-tax-calculator',
+    [RentalTaxCalculatorController::class, 'calculate']
+)->name('public.rental-tax.calculate');
 
 Route::get('/dashboard', function (Request $request) {
 
@@ -36,21 +75,12 @@ Route::get('/dashboard', function (Request $request) {
     };
 })->middleware('auth')->name('dashboard');
 
+
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-
-Route::middleware([
-    'auth',
-    'role:individual'
-])->group(function () {
-
-    Route::get(
-        '/individual/dashboard',
-        [IndividualDashboardController::class, 'index']
-    )->name('individual.dashboard');
 });
 
 Route::middleware([
@@ -64,16 +94,52 @@ Route::middleware([
     )->name('business.dashboard');
 });
 
+// ADMIN ROUTES
+
 Route::middleware([
     'auth',
     'role:admin'
-])->group(function () {
+])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
 
-    Route::get(
-        '/admin/dashboard',
-        [AdminDashboardController::class, 'index']
-    )->name('admin.dashboard');
-});
+        Route::get(
+            '/dashboard',
+            [AdminDashboardController::class, 'index']
+        )->name('dashboard');
+
+        Route::resource(
+            'income-tax-brackets',
+            IncomeTaxBracketController::class
+        );
+
+        Route::resource(
+            'tax-settings',
+            TaxSettingController::class
+        );
+
+        Route::resource(
+            'salary-tax-brackets',
+            SalaryTaxBracketController::class
+        );
+
+        Route::resource(
+            'users',
+            UserController::class
+        );
+
+        Route::resource(
+            'companies',
+            AdminCompanyController::class
+        )->only([
+            'index',
+            'show',
+            'destroy'
+        ]);
+    });
+
+// BUSINESS ROUTES
 
 Route::middleware([
     'auth',
@@ -143,6 +209,16 @@ Route::middleware([
             'tax-returns/{taxReturn}/paid',
             [TaxReturnController::class, 'markPaid']
         )->name('tax-returns.paid');
+        Route::resource(
+            'tax-settings',
+            TaxSettingController::class
+        );
+
+        Route::resource(
+            'salary-tax-brackets',
+            SalaryTaxBracketController::class
+        );
     });
+
 
 require __DIR__ . '/auth.php';

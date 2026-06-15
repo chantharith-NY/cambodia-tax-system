@@ -14,6 +14,7 @@ class Employee extends Model
         'salary',
         'currency',
         'residency_status',
+        'spouse_count',
         'dependents',
         'fringe_benefit_khr',
     ];

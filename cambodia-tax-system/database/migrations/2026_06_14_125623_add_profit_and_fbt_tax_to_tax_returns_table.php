@@ -6,23 +6,34 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
-        Schema::table('expenses', function (Blueprint $table) {
+        Schema::table('tax_returns', function ($table) {
 
             $table->decimal(
-                'amount_khr',
+                'profit',
+                15,
+                2
+            )->default(0);
+
+            $table->decimal(
+                'fbt_tax',
                 15,
                 2
             )->default(0);
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        Schema::table('expenses', function (Blueprint $table) {
-
-            $table->dropColumn('amount_khr');
+        Schema::table('tax_returns', function (Blueprint $table) {
+            //
         });
     }
 };

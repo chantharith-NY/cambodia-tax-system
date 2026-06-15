@@ -42,25 +42,39 @@ class RevenueController extends Controller
             ? $request->amount * $exchangeRate
             : $request->amount;
 
-        if ($request->vat_included) {
+        $hasVatInvoice =
+            $request->boolean('has_vat_invoice');
 
-            $baseAmount = round(
-                $amountKHR / 1.10,
-                2
-            );
+        $vatIncluded =
+            $request->boolean('vat_included');
 
-            $vatAmount = round(
-                $amountKHR - $baseAmount,
-                2
-            );
-        } else {
+        if (!$hasVatInvoice) {
 
             $baseAmount = $amountKHR;
 
-            $vatAmount = round(
-                $amountKHR * 0.10,
-                2
-            );
+            $vatAmount = 0;
+        } else {
+
+            if ($vatIncluded) {
+
+                $baseAmount = round(
+                    $amountKHR / 1.10,
+                    2
+                );
+
+                $vatAmount = round(
+                    $amountKHR - $baseAmount,
+                    2
+                );
+            } else {
+
+                $baseAmount = $amountKHR;
+
+                $vatAmount = round(
+                    $amountKHR * 0.10,
+                    2
+                );
+            }
         }
 
         $company = $request->user()->getCurrentCompany();
@@ -87,7 +101,9 @@ class RevenueController extends Controller
             'exchange_rate' => $exchangeRate,
             'amount_khr' => $amountKHR,
 
-            'vat_included' => $request->vat_included,
+            'has_vat_invoice' => $hasVatInvoice,
+
+            'vat_included' => $vatIncluded,
 
             'base_amount' => $baseAmount,
 
@@ -139,25 +155,39 @@ class RevenueController extends Controller
             ? $request->amount * $exchangeRate
             : $request->amount;
 
-        if ($request->boolean('vat_included')) {
+        $hasVatInvoice =
+            $request->boolean('has_vat_invoice');
 
-            $baseAmount = round(
-                $amountKHR / 1.10,
-                2
-            );
+        $vatIncluded =
+            $request->boolean('vat_included');
 
-            $vatAmount = round(
-                $amountKHR - $baseAmount,
-                2
-            );
-        } else {
+        if (!$hasVatInvoice) {
 
             $baseAmount = $amountKHR;
 
-            $vatAmount = round(
-                $amountKHR * 0.10,
-                2
-            );
+            $vatAmount = 0;
+        } else {
+
+            if ($vatIncluded) {
+
+                $baseAmount = round(
+                    $amountKHR / 1.10,
+                    2
+                );
+
+                $vatAmount = round(
+                    $amountKHR - $baseAmount,
+                    2
+                );
+            } else {
+
+                $baseAmount = $amountKHR;
+
+                $vatAmount = round(
+                    $amountKHR * 0.10,
+                    2
+                );
+            }
         }
 
         $revenue->update([
@@ -167,7 +197,8 @@ class RevenueController extends Controller
             'currency' => $request->currency,
             'exchange_rate' => $exchangeRate,
             'amount_khr' => $amountKHR,
-            'vat_included' => $request->vat_included,
+            'has_vat_invoice' => $hasVatInvoice,
+            'vat_included' => $vatIncluded,
             'base_amount' => $baseAmount,
             'vat_amount' => $vatAmount,
             'invoice_date' => $request->invoice_date,

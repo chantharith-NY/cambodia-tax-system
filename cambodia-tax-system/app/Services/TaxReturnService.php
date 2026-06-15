@@ -127,41 +127,6 @@ class TaxReturnService
             )
             ->sum('salary_tax');
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | Profit Before Tax
-        |--------------------------------------------------------------------------
-        */
-
-        $profitBeforeTax =
-            $totalRevenue
-            -
-            $totalExpense
-            -
-            $totalPayroll;
-
-        /*
-        |--------------------------------------------------------------------------
-        | Profit Tax (20%)
-        |--------------------------------------------------------------------------
-        */
-
-        $profitTax = $profitBeforeTax > 0
-            ? round($profitBeforeTax * 0.20, 2)
-            : 0;
-
-        /*
-        |--------------------------------------------------------------------------
-        | Profit After Tax
-        |--------------------------------------------------------------------------
-        */
-
-        $profitAfterTax =
-            $profitBeforeTax
-            -
-            $profitTax;
-
         /*
         |--------------------------------------------------------------------------
         | Withholding Tax
@@ -247,12 +212,6 @@ class TaxReturnService
             'total_tax_due' => $totalTaxDue,
 
             'total_payroll' => $totalPayroll,
-
-            'profit_before_tax' => $profitBeforeTax,
-
-            'profit_tax' => $profitTax,
-
-            'profit_after_tax' => $profitAfterTax,
         ];
     }
 }
