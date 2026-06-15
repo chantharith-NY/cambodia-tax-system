@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Business;
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use App\Models\Payroll;
-use App\Services\SalaryTaxService;
+use App\Services\TaxCalculationService;
 use Illuminate\Http\Request;
 
 class PayrollController extends Controller
@@ -44,7 +44,7 @@ class PayrollController extends Controller
      */
     public function store(
         Request $request,
-        SalaryTaxService $salaryTaxService
+        TaxCalculationService $taxService
     ) {
         $request->validate([
             'employee_id' => [
@@ -62,15 +62,15 @@ class PayrollController extends Controller
             $request->employee_id
         );
 
-        $salaryKHR = $employee->currency === 'USD'
+        $salaryResult =
+            $taxService->calculateEmployeeSalaryTax(
+                $employee
+            );
+
+        $grossSalary =
+            $employee->currency === 'USD'
             ? $employee->salary * 4100
             : $employee->salary;
-
-        $taxResult = $salaryTaxService->calculate(
-            $salaryKHR,
-            $employee->dependents,
-            $employee->fringe_benefit_khr
-        );
 
         Payroll::create([
 
@@ -81,15 +81,15 @@ class PayrollController extends Controller
             $request->payroll_month,
 
             'gross_salary' =>
-            $taxResult['gross_salary_khr'],
+            $grossSalary,
 
             'salary_tax' =>
-            $taxResult['total_tax_khr'],
+            $salaryResult['salary_tax'],
 
             'net_salary' =>
-            $taxResult['gross_salary_khr']
+            $grossSalary
                 -
-                $taxResult['total_tax_khr'],
+                $salaryResult['salary_tax'],
         ]);
 
         return redirect()
@@ -103,8 +103,9 @@ class PayrollController extends Controller
     /**
      * Show payroll details.
      */
-    public function show(Payroll $payroll)
-    {
+    public function show(
+        Payroll $payroll
+    ) {
         return view(
             'business.payrolls.show',
             compact('payroll')
@@ -114,8 +115,9 @@ class PayrollController extends Controller
     /**
      * Show edit form.
      */
-    public function edit(Payroll $payroll)
-    {
+    public function edit(
+        Payroll $payroll
+    ) {
         $employees = Employee::orderBy('name')
             ->get();
 
@@ -134,9 +136,8 @@ class PayrollController extends Controller
     public function update(
         Request $request,
         Payroll $payroll,
-        SalaryTaxService $salaryTaxService
+        TaxCalculationService $taxService
     ) {
-
         $request->validate([
             'employee_id' => [
                 'required',
@@ -153,11 +154,15 @@ class PayrollController extends Controller
             $request->employee_id
         );
 
-        $taxResult = $salaryTaxService->calculate(
-            $employee->salary,
-            $employee->dependents,
-            $employee->fringe_benefit_khr
-        );
+        $salaryResult =
+            $taxService->calculateEmployeeSalaryTax(
+                $employee
+            );
+
+        $grossSalary =
+            $employee->currency === 'USD'
+            ? $employee->salary * 4100
+            : $employee->salary;
 
         $payroll->update([
 
@@ -168,15 +173,15 @@ class PayrollController extends Controller
             $request->payroll_month,
 
             'gross_salary' =>
-            $taxResult['gross_salary_khr'],
+            $grossSalary,
 
             'salary_tax' =>
-            $taxResult['total_tax_khr'],
+            $salaryResult['salary_tax'],
 
             'net_salary' =>
-            $taxResult['gross_salary_khr']
+            $grossSalary
                 -
-                $taxResult['total_tax_khr'],
+                $salaryResult['salary_tax'],
         ]);
 
         return redirect()
@@ -190,8 +195,9 @@ class PayrollController extends Controller
     /**
      * Delete payroll.
      */
-    public function destroy(Payroll $payroll)
-    {
+    public function destroy(
+        Payroll $payroll
+    ) {
         $payroll->delete();
 
         return redirect()

@@ -20,10 +20,11 @@ class TaxReturn extends Model
         'prepayment_tax',
         'total_tax_due',
         'total_payroll',
-        'profit_before_tax',
-        'profit_tax',
-        'profit_after_tax',
         'status',
+        'profit',
+        'profit_tax',
+        'fbt_tax',
+        'total_payroll',
     ];
 
     protected function casts(): array

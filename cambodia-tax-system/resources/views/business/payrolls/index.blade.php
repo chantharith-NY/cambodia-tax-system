@@ -2,17 +2,25 @@
 
     <div class="max-w-7xl mx-auto py-6">
 
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex items-center justify-between mb-6">
 
-            <h2 class="text-2xl font-bold">
-                Payroll List
-            </h2>
+            <div>
+
+                <h1 class="text-3xl font-bold text-gray-900">
+                    Payroll Management
+                </h1>
+
+                <p class="text-gray-500 mt-1">
+                    Manage employee payroll and salary tax calculations.
+                </p>
+
+            </div>
 
             <a
                 href="{{ route('business.payrolls.create') }}"
-                class="bg-green-600 text-white px-4 py-2 rounded">
+                class="bg-purple-600 hover:bg-purple-700 text-white px-5 py-3 rounded-xl shadow">
 
-                Generate Payroll
+                + Generate Payroll
 
             </a>
 
@@ -26,7 +34,7 @@
 
         @endif
 
-        <div class="bg-white shadow rounded-lg overflow-hidden">
+        <div class="bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-100">
 
             <table class="w-full">
 
@@ -66,7 +74,7 @@
 
                     @forelse($payrolls as $payroll)
 
-                    <tr class="border-t">
+                    <tr class="border-t hover:bg-gray-50 transition">
 
                         <td class="p-3">
                             {{ $payroll->employee->name }}
@@ -76,45 +84,56 @@
                             {{ $payroll->payroll_month->format('M Y') }}
                         </td>
 
+                        <td class="p-3 font-semibold">
+                            {{ number_format($payroll->gross_salary,2) }}
+                        </td>
+
+                        <td class="p-3 text-red-600 font-semibold">
+                            {{ number_format($payroll->salary_tax,2) }}
+                        </td>
+
+                        <td class="p-3 text-green-600 font-semibold">
+                            {{ number_format($payroll->net_salary,2) }}
+                        </td>
+
                         <td class="p-3">
-                            {{ number_format($payroll->gross_salary, 2) }}
-                        </td>
 
-                        <td class="p-3 text-red-600">
-                            {{ number_format($payroll->salary_tax, 2) }}
-                        </td>
+                            <div class="flex gap-2">
 
-                        <td class="p-3 text-green-600">
-                            {{ number_format($payroll->net_salary, 2) }}
-                        </td>
+                                <a
+                                    href="{{ route('business.payrolls.show',$payroll) }}"
+                                    class="px-3 py-1 bg-green-100 text-green-700 rounded">
 
-                        <td class="p-3 flex gap-3">
+                                    View
 
-                            <a
-                                href="{{ route('business.payrolls.edit', $payroll) }}"
-                                class="text-blue-600">
+                                </a>
 
-                                Edit
+                                <a
+                                    href="{{ route('business.payrolls.edit',$payroll) }}"
+                                    class="px-3 py-1 bg-blue-100 text-blue-700 rounded">
 
-                            </a>
+                                    Edit
 
-                            <form
-                                action="{{ route('business.payrolls.destroy', $payroll) }}"
-                                method="POST">
+                                </a>
 
-                                @csrf
-                                @method('DELETE')
+                                <form
+                                    action="{{ route('business.payrolls.destroy',$payroll) }}"
+                                    method="POST">
 
-                                <button
-                                    type="submit"
-                                    class="text-red-600"
-                                    onclick="return confirm('Delete payroll?')">
+                                    @csrf
+                                    @method('DELETE')
 
-                                    Delete
+                                    <button
+                                        class="px-3 py-1 bg-red-100 text-red-700 rounded"
+                                        onclick="return confirm('Delete payroll?')">
 
-                                </button>
+                                        Delete
 
-                            </form>
+                                    </button>
+
+                                </form>
+
+                            </div>
 
                         </td>
 
@@ -124,11 +143,19 @@
 
                     <tr>
 
-                        <td
-                            colspan="6"
-                            class="text-center p-6">
+                        <td colspan="6" class="text-center py-12">
 
-                            No payroll records found.
+                            <div>
+
+                                <p class="text-lg font-semibold text-gray-600">
+                                    No Payroll Records Found
+                                </p>
+
+                                <p class="text-gray-500 mt-2">
+                                    Generate your first payroll record.
+                                </p>
+
+                            </div>
 
                         </td>
 

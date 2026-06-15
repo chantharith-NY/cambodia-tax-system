@@ -8,6 +8,27 @@ use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
 {
+
+    private const CATEGORIES = [
+
+        'rental',
+        'service',
+        'interest',
+        'royalty',
+
+        'utility',
+        'internet',
+        'fuel',
+
+        'salary',
+
+        'office_supply',
+        'equipment',
+
+        'transportation',
+
+        'other',
+    ];
     public function index()
     {
         $expenses = Expense::latest()
@@ -30,93 +51,149 @@ class ExpenseController extends Controller
     {
         $request->validate([
             'supplier_name' => ['required'],
-            'category' => ['required'],
+            'supplier_type' => ['required'],
+            'category' => [
+                'required',
+                'in:' . implode(',', self::CATEGORIES)
+            ],
             'amount' => ['required', 'numeric'],
             'expense_date' => ['required', 'date'],
         ]);
 
-        $exchangeRate = $request->exchange_rate ?? 4100;
+        $currency =
+            $request->currency
+            ?? 'KHR';
 
-        $amountKHR = $request->currency === 'USD'
+        $exchangeRate =
+            $request->exchange_rate
+            ?? 4100;
+
+        $amountKHR =
+            $currency === 'USD'
             ? $request->amount * $exchangeRate
             : $request->amount;
 
-        $vatIncluded =
-            $request->boolean('vat_included');
+        /*
+        |--------------------------------------------------------------------------
+        | Withholding Tax
+        |--------------------------------------------------------------------------
+        */
 
-        if ($vatIncluded) {
+        $withholdingRate = 0;
 
-            $baseAmount = round(
-                $amountKHR / 1.10,
-                2
-            );
+        if (
+            $request->supplier_type === 'resident'
+        ) {
+            switch ($request->category) {
 
-            $vatAmount = round(
-                $amountKHR - $baseAmount,
-                2
-            );
-        } else {
+                case 'rental':
+                    $withholdingRate = 10;
+                    break;
+
+                case 'service':
+                case 'interest':
+                case 'royalty':
+                    $withholdingRate = 15;
+                    break;
+
+                default:
+                    $withholdingRate = 0;
+            }
+        }
+
+        if (
+            $request->supplier_type === 'non_resident'
+        ) {
+            $withholdingRate = 14;
+        }
+
+        $withholdingTax = round($amountKHR * ($withholdingRate / 100), 2);
+        $netPayment = $amountKHR - $withholdingTax;
+
+        /*
+        |--------------------------------------------------------------------------
+        | VAT
+        |--------------------------------------------------------------------------
+        */
+
+        $vatIncluded = $request->boolean('vat_included');
+        $hasVatInvoice =
+            $request->boolean('has_vat_invoice');
+
+        if (!$hasVatInvoice) {
 
             $baseAmount = $amountKHR;
 
-            $vatAmount = round(
-                $amountKHR * 0.10,
-                2
-            );
+            $vatAmount = 0;
+        } else {
+
+            if ($vatIncluded) {
+
+                $baseAmount = round(
+                    $amountKHR / 1.10,
+                    2
+                );
+
+                $vatAmount = round(
+                    $amountKHR - $baseAmount,
+                    2
+                );
+            } else {
+
+                $baseAmount = $amountKHR;
+
+                $vatAmount = round(
+                    $amountKHR * 0.10,
+                    2
+                );
+            }
         }
 
         $company = $request->user()
             ->getCurrentCompany();
 
         Expense::create([
-
             'company_id' => $company->id,
-
-            'supplier_name' =>
-            $request->supplier_name,
-
-            'category' =>
-            $request->category,
-
+            'supplier_name' => $request->supplier_name,
+            'supplier_type' => $request->supplier_type,
+            'category' => $request->category,
             'amount' => $request->amount,
-            'currency' => $request->currency,
+            'currency' => $currency,
             'exchange_rate' => $exchangeRate,
             'amount_khr' => $amountKHR,
-
-            'vat_included' =>
-            $vatIncluded,
-
-            'base_amount' =>
-            $baseAmount,
-
-            'vat_amount' =>
-            $vatAmount,
-
-            'description' =>
-            $request->description,
-
-            'expense_date' =>
-            $request->expense_date,
+            'withholding_rate' => $withholdingRate,
+            'withholding_tax' => $withholdingTax,
+            'net_payment' => $netPayment,
+            'has_vat_invoice' => $hasVatInvoice,
+            'vat_included' => $vatIncluded,
+            'base_amount' => $baseAmount,
+            'vat_amount' => $vatAmount,
+            'description' => $request->description,
+            'expense_date' => $request->expense_date,
         ]);
 
         return redirect()
-            ->route('business.expenses.index')
+            ->route(
+                'business.expenses.index'
+            )
             ->with(
                 'success',
                 'Expense created successfully.'
             );
     }
 
-    public function show(Expense $expense)
-    {
+    public function show(
+        Expense $expense
+    ) {
         return view(
             'business.expenses.show',
             compact('expense')
         );
     }
 
-    public function edit(Expense $expense)
-    {
+    public function edit(
+        Expense $expense
+    ) {
         return view(
             'business.expenses.edit',
             compact('expense')
@@ -130,78 +207,144 @@ class ExpenseController extends Controller
 
         $request->validate([
             'supplier_name' => ['required'],
-            'category' => ['required'],
+            'supplier_type' => ['required'],
+            'category' => [
+                'required',
+                'in:' . implode(',', self::CATEGORIES)
+            ],
             'amount' => ['required', 'numeric'],
             'expense_date' => ['required', 'date'],
         ]);
 
+        $currency =
+            $request->currency
+            ?? $expense->currency
+            ?? 'KHR';
+
         $exchangeRate =
             $request->exchange_rate
+            ?? $expense->exchange_rate
             ?? 4100;
 
         $amountKHR =
-            $request->currency === 'USD'
+            $currency === 'USD'
             ? $request->amount * $exchangeRate
             : $request->amount;
 
-        $vatIncluded = $request->boolean('vat_included');
+        /*
+        |--------------------------------------------------------------------------
+        | Withholding Tax
+        |--------------------------------------------------------------------------
+        */
 
-        if ($vatIncluded) {
+        $withholdingRate = 0;
 
-            $baseAmount = round(
-                $amountKHR / 1.10,
-                2
-            );
+        if (
+            $request->supplier_type === 'resident'
+        ) {
+            switch ($request->category) {
 
-            $vatAmount = round(
-                $amountKHR - $baseAmount,
-                2
-            );
-        } else {
+                case 'rental':
+                    $withholdingRate = 10;
+                    break;
+
+                case 'service':
+                case 'interest':
+                case 'royalty':
+                    $withholdingRate = 15;
+                    break;
+
+                default:
+                    $withholdingRate = 0;
+            }
+        }
+        if (
+            $request->supplier_type === 'non_resident'
+        ) {
+            $withholdingRate = 14;
+        }
+        $withholdingTax = round($amountKHR * ($withholdingRate / 100), 2);
+        $netPayment = $amountKHR - $withholdingTax;
+
+        /*
+        |--------------------------------------------------------------------------
+        | VAT
+        |--------------------------------------------------------------------------
+        */
+
+        $vatIncluded =
+            $request->boolean('vat_included');
+
+        $hasVatInvoice =
+            $request->boolean('has_vat_invoice');
+
+        if (!$hasVatInvoice) {
 
             $baseAmount = $amountKHR;
 
-            $vatAmount = round(
-                $amountKHR * 0.10,
-                2
-            );
+            $vatAmount = 0;
+        } else {
+
+            if ($vatIncluded) {
+
+                $baseAmount = round(
+                    $amountKHR / 1.10,
+                    2
+                );
+
+                $vatAmount = round(
+                    $amountKHR - $baseAmount,
+                    2
+                );
+            } else {
+
+                $baseAmount = $amountKHR;
+
+                $vatAmount = round(
+                    $amountKHR * 0.10,
+                    2
+                );
+            }
         }
 
         $expense->update([
             'supplier_name' => $request->supplier_name,
-
+            'supplier_type' => $request->supplier_type,
             'category' => $request->category,
-
             'amount' => $request->amount,
-            'currency' => $request->currency,
+            'currency' => $currency,
             'exchange_rate' => $exchangeRate,
             'amount_khr' => $amountKHR,
-
+            'withholding_rate' => $withholdingRate,
+            'withholding_tax' => $withholdingTax,
+            'net_payment' => $netPayment,
+            'has_vat_invoice' => $request->boolean('has_vat_invoice'),
             'vat_included' => $vatIncluded,
-
             'base_amount' => $baseAmount,
-
             'vat_amount' => $vatAmount,
-
             'description' => $request->description,
-
             'expense_date' => $request->expense_date,
         ]);
 
         return redirect()
-            ->route('business.expenses.index')
+            ->route(
+                'business.expenses.index'
+            )
             ->with(
                 'success',
                 'Expense updated successfully.'
             );
     }
 
-    public function destroy(Expense $expense)
-    {
+    public function destroy(
+        Expense $expense
+    ) {
         $expense->delete();
 
         return redirect()
-            ->route('business.expenses.index')
+            ->route(
+                'business.expenses.index'
+            )
             ->with(
                 'success',
                 'Expense deleted successfully.'

@@ -16,21 +16,10 @@
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
         <div class="mt-4">
-            <label class="block text-sm font-medium">
-                User Type
-            </label>
-
-            <select
+            <input
+                type="hidden"
                 name="role"
-                class="w-full border rounded p-2">
-                <option value="individual">
-                    Individual
-                </option>
-
-                <option value="business">
-                    Business
-                </option>
-            </select>
+                value="business">
         </div>
 
         <!-- Password -->

@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+use App\Models\Company;
+
 #[Fillable(['name', 'email', 'password', 'role'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
@@ -34,14 +36,24 @@ class User extends Authenticatable
         return $this->hasOne(TaxpayerProfile::class);
     }
 
+    public function company()
+    {
+        return $this->hasOne(
+            Company::class,
+            'owner_id'
+        );
+    }
+
     public function companies()
     {
-        return $this->hasMany(Company::class, 'owner_id');
+        return $this->hasMany(
+            Company::class,
+            'owner_id'
+        );
     }
 
     public function getCurrentCompany()
     {
-        return $this->companies()
-            ->first();
+        return $this->company;
     }
 }

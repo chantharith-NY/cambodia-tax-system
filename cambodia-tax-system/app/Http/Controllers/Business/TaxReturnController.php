@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Business;
 
 use App\Http\Controllers\Controller;
 use App\Models\TaxReturn;
-use App\Services\TaxReturnService;
 use Illuminate\Http\Request;
+use App\Services\TaxCalculationService;
 
 use Carbon\Carbon;
 
@@ -31,9 +31,8 @@ class TaxReturnController extends Controller
 
     public function store(
         Request $request,
-        TaxReturnService $service
+        TaxCalculationService $service
     ) {
-
         $request->validate([
             'tax_month' => [
                 'required',
@@ -44,6 +43,13 @@ class TaxReturnController extends Controller
         $company = $request->user()
             ->getCurrentCompany();
 
+        if (!$company) {
+
+            return back()->with(
+                'error',
+                'Please create a company first.'
+            );
+        }
 
         $taxMonth = Carbon::parse(
             $request->tax_month . '-01'
@@ -67,15 +73,55 @@ class TaxReturnController extends Controller
             );
         }
 
-        $summary = $service->generate(
-            $company->id,
-            $taxMonth->format('Y-m-d')
-        );
+        $summary =
+            $service->generateMonthlyTaxReturn(
+                $company->id,
+                $taxMonth->format('Y-m-d')
+            );
 
         TaxReturn::create([
-            'company_id' => $company->id,
-            'tax_month' => $taxMonth,
-            ...$summary
+
+            'company_id' =>
+            $company->id,
+
+            'tax_month' =>
+            $taxMonth,
+
+            'total_revenue' =>
+            $summary['total_revenue'],
+
+            'total_expense' =>
+            $summary['total_expense'],
+
+            'profit' =>
+            $summary['profit'],
+
+            'output_vat' =>
+            $summary['output_vat'],
+
+            'input_vat' =>
+            $summary['input_vat'],
+
+            'vat_payable' =>
+            $summary['vat_payable'],
+
+            'salary_tax' =>
+            $summary['salary_tax'],
+
+            'withholding_tax' =>
+            $summary['withholding_tax'],
+
+            'prepayment_tax' =>
+            $summary['prepayment_tax'],
+
+            'total_tax_due' =>
+            $summary['total_tax_due'],
+
+            'total_payroll' =>
+            $summary['total_payroll'] ?? 0,
+
+            'status' =>
+            'draft',
         ]);
 
         return redirect()
@@ -84,10 +130,9 @@ class TaxReturnController extends Controller
             )
             ->with(
                 'success',
-                'Tax Return generated.'
+                'Tax Return generated successfully.'
             );
     }
-
     public function show(
         TaxReturn $taxReturn
     ) {

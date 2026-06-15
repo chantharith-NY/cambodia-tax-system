@@ -57,7 +57,7 @@
                         </td>
                     </tr>
 
-                    <tr class="bg-blue-50 border-b">
+                    <!-- <tr class="bg-blue-50 border-b">
                         <td class="p-3 font-bold">
                             Profit Before Tax
                         </td>
@@ -82,7 +82,7 @@
                         <td class="p-3 text-right font-bold text-green-700">
                             {{ number_format($taxReturn->profit_after_tax, 2) }} KHR
                         </td>
-                    </tr>
+                    </tr> -->
 
                     <tr>
                         <td colspan="2"

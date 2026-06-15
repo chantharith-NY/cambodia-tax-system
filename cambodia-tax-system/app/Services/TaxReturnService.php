@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\Revenue;
 use App\Models\Expense;
 use App\Models\Payroll;
-use App\Models\WithholdingTax;
+// use App\Models\WithholdingTax;
 use Carbon\Carbon;
 
 class TaxReturnService
@@ -63,10 +63,24 @@ class TaxReturnService
             )
             ->sum('amount_khr');
 
+        // $inputVat = Expense::where(
+        //     'company_id',
+        //     $companyId
+        // )
+        //     ->whereBetween(
+        //         'expense_date',
+        //         [$startDate, $endDate]
+        //     )
+        //     ->sum('vat_amount');
+
         $inputVat = Expense::where(
             'company_id',
             $companyId
         )
+            ->where(
+                'has_vat_invoice',
+                true
+            )
             ->whereBetween(
                 'expense_date',
                 [$startDate, $endDate]
@@ -113,53 +127,28 @@ class TaxReturnService
             )
             ->sum('salary_tax');
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | Profit Before Tax
-        |--------------------------------------------------------------------------
-        */
-
-        $profitBeforeTax =
-            $totalRevenue
-            -
-            $totalExpense
-            -
-            $totalPayroll;
-
-        /*
-        |--------------------------------------------------------------------------
-        | Profit Tax (20%)
-        |--------------------------------------------------------------------------
-        */
-
-        $profitTax = $profitBeforeTax > 0
-            ? round($profitBeforeTax * 0.20, 2)
-            : 0;
-
-        /*
-        |--------------------------------------------------------------------------
-        | Profit After Tax
-        |--------------------------------------------------------------------------
-        */
-
-        $profitAfterTax =
-            $profitBeforeTax
-            -
-            $profitTax;
-
         /*
         |--------------------------------------------------------------------------
         | Withholding Tax
         |--------------------------------------------------------------------------
         */
 
-        $withholdingTax = WithholdingTax::where(
+        // $withholdingTax = WithholdingTax::where(
+        //     'company_id',
+        //     $companyId
+        // )
+        //     ->whereBetween(
+        //         'payment_date',
+        //         [$startDate, $endDate]
+        //     )
+        //     ->sum('withholding_tax');
+
+        $withholdingTax = Expense::where(
             'company_id',
             $companyId
         )
             ->whereBetween(
-                'payment_date',
+                'expense_date',
                 [$startDate, $endDate]
             )
             ->sum('withholding_tax');
@@ -198,9 +187,9 @@ class TaxReturnService
             +
             $withholdingTax
             +
-            $prepaymentTax
-            +
-            $profitTax;
+            $prepaymentTax;
+        // +
+        // $profitTax;
 
         return [
 
@@ -223,12 +212,6 @@ class TaxReturnService
             'total_tax_due' => $totalTaxDue,
 
             'total_payroll' => $totalPayroll,
-
-            'profit_before_tax' => $profitBeforeTax,
-
-            'profit_tax' => $profitTax,
-
-            'profit_after_tax' => $profitAfterTax,
         ];
     }
 }
