@@ -10,13 +10,26 @@ class SalaryTaxBracketController extends Controller
 {
     public function index()
     {
-        $salaryTaxBrackets = SalaryTaxBracket::orderBy('resident_type')
+        $residentBrackets = SalaryTaxBracket::where(
+            'resident_type',
+            'resident'
+        )
+            ->orderBy('min_salary')
+            ->get();
+
+        $nonResidentBrackets = SalaryTaxBracket::where(
+            'resident_type',
+            'non_resident'
+        )
             ->orderBy('min_salary')
             ->get();
 
         return view(
-            'admin.salary-tax-brackets.index',
-            compact('salaryTaxBrackets')
+            'public.salary_tax.index',
+            compact(
+                'residentBrackets',
+                'nonResidentBrackets'
+            )
         );
     }
 

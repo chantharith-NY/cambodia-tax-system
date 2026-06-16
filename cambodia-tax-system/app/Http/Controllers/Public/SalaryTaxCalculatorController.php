@@ -103,13 +103,34 @@ class SalaryTaxCalculatorController extends Controller
             ? $request->salary * 4100
             : $request->salary;
 
+        /*
+|--------------------------------------------------------------------------
+| Tax Tables
+|--------------------------------------------------------------------------
+*/
+
+        $residentBrackets = SalaryTaxBracket::where(
+            'resident_type',
+            'resident'
+        )
+            ->orderBy('min_salary')
+            ->get();
+
+        $nonResidentBrackets = SalaryTaxBracket::where(
+            'resident_type',
+            'non_resident'
+        )
+            ->orderBy('min_salary')
+            ->get();
+
         return view(
             'public.salary_tax.index',
-            [
-                'result' => $result,
-                'grossSalary' => $grossSalary,
-                // 'salaryTaxBrackets' => $salaryTaxBrackets,
-            ]
+            compact(
+                'result',
+                'grossSalary',
+                'residentBrackets',
+                'nonResidentBrackets'
+            )
         );
     }
 }

@@ -36,7 +36,7 @@ class DashboardController extends Controller
         $totalRevenue = Revenue::where(
             'company_id',
             $company->id
-        )->sum('amount');
+        )->sum('base_amount');
 
         $totalRevenueBase = Revenue::where(
             'company_id',
@@ -57,7 +57,7 @@ class DashboardController extends Controller
         $totalExpense = Expense::where(
             'company_id',
             $company->id
-        )->sum('amount');
+        )->sum('base_amount');
 
         $totalExpenseBase = Expense::where(
             'company_id',
