@@ -173,6 +173,22 @@
 
                     <div class="grid md:grid-cols-2 gap-4">
 
+                        <!-- <div>
+
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Spouse Count
+                            </label>
+
+                            <input
+                                type="number"
+                                name="spouse_count"
+                                value="0"
+                                min="0"
+                                max="1"
+                                class="w-full border rounded-lg p-3">
+
+                        </div> -->
+
                         <div>
 
                             <label class="block text-sm font-medium text-gray-700 mb-1">

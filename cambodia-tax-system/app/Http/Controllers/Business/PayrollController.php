@@ -103,9 +103,10 @@ class PayrollController extends Controller
     /**
      * Show payroll details.
      */
-    public function show(
-        Payroll $payroll
-    ) {
+    public function show(Payroll $payroll)
+    {
+        $payroll->load('employee');
+
         return view(
             'business.payrolls.show',
             compact('payroll')
